@@ -59,7 +59,6 @@ if [ $OS = "linux" ]; then
   builtin alias ls='ls -F --color=tty'
 elif [ $OS = "darwin" ]; then
   builtin alias ls='gls -F --color=tty'
-  postPATH /usr/pkg/bin
 elif [ $OS = "nt" ]; then
   builtin alias cw='cygpath -w'
   builtin alias cu='cygpath -u'
@@ -111,5 +110,5 @@ else
   zgen oh-my-zsh themes/jreese
 fi
 
-ZSHRC_HOSTNAME=~/.zshrc.`hostname`
+ZSHRC_HOSTNAME=~/.zshrc.`hostname -s`
 [[ -f $ZSHRC_HOSTNAME ]] && source $ZSHRC_HOSTNAME
