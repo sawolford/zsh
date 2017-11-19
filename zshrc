@@ -54,14 +54,17 @@ function alias() { if [ $# -eq 2 ]; then builtin alias $1=$2; elif [ $# -eq 1 ];
 builtin alias balias='builtin alias'
 builtin alias seq='seq -w'
 builtin alias hashd='hash -d'
+function makel() { make $* |& less }
+builtin alias makev='make VERBOSE=1'
 
 if [ $OS = "linux" ]; then
   builtin alias ls='ls -F --color=tty'
+  builtin alias ee=code
+  builtin alias usr='cd /usr/people/feds'
 elif [ $OS = "darwin" ]; then
   builtin alias ls='gls -F --color=tty'
-elif [ $OS = "nt" ]; then
-  builtin alias cw='cygpath -w'
-  builtin alias cu='cygpath -u'
+  builtin alias ee='open -a "Visual Studio Code"'
+  builtin alias usr='cd ~/people/feds'
 fi
 
 # setopt
@@ -71,7 +74,7 @@ setopt ignore_eof # eof(^D) doesn't quit shell
 setopt interactive_comments # allow comments in interactive shell
 setopt numeric_glob_sort # sort numerically rather than lexically in globs
 setopt no_beep # turn off that incessant beeping
-setopt cdable_vars # try to prepend ~ for cd's
+#setopt cdable_vars # try to prepend ~ for cd's
 #setopt print_exit_value # print non-zero exit status
 #setopt list_types # show types when listing ambiguous completions
 #setopt no_match # seems just like bad_pattern
@@ -95,13 +98,11 @@ setopt cdable_vars # try to prepend ~ for cd's
 HISTCONTROL="ignoreboth"
 HISTIGNORE="bg:fg"
 
-hash -d Formula=/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula
-
-ps -hp$PPID | grep gnome-terminal 2>&1 >/dev/null
+ps -p$PPID | grep gnome-terminal 2>&1 >/dev/null
 gt=$?
-ps -hp$PPID | grep wslbridge 2>&1 >/dev/null
+ps -p$PPID | grep wslbridge 2>&1 >/dev/null
 wslb=$?
-# ps -hp$PPID | grep konsole 2>&1 >/dev/null
+# ps -p$PPID | grep konsole 2>&1 >/dev/null
 # ko=$?
 if [ -n "$SSH_TTY" ]; then export BULLETTRAIN_IS_SSH_CLIENT=1; fi
 if [ ${TERM_PROGRAM-x} = "iTerm.app" -o $gt -eq 0 -o $wslb -eq 0 ]; then

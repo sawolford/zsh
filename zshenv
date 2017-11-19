@@ -11,26 +11,40 @@ export MICROSOFT=
 uname -r | grep Microsoft &>/dev/null && export MICROSOFT=1
 
 function varset() { [ ${(P)+1} = "1" ] }
-function prepend() { if varset ${1}; then export $1="$2$3${(P)1}"; else export $1="$2"; fi }
-function postpend() { if varset ${1}; then export $1="${(P)1}$3$2"; else export $1="$2"; fi }
+function prepend() {
+  echo ${(P)1} | grep -- ${2} 2>&1 >/dev/null
+  st=$?
+  if [ $st -ne 0 ]; then
+    if varset ${1}; then
+      export $1="$2$3${(P)1}"
+    else
+      export $1="$2"
+    fi
+  fi
+}
+function postpend() {
+  echo ${(P)1} | grep -- ${2} 2>&1 >/dev/null
+  st=$?
+  if [ $st -ne 0 ]; then
+    if varset ${1}; then
+      export $1="${(P)1}$3$2"
+    else
+      export $1="$2"
+    fi
+  fi
+}
 
 function prePATH() { prepend PATH $1 ':' }
 function postPATH() { postpend PATH $1 ':' }
+function prePYTHONPATH() { prepend PYTHONPATH $1 ':' }
+function postPYTHONPATH() { postpend PYTHONPATH $1 ':' }
 
-if [ $OS = "darwin" ]; then
-  function preDYLD_LIBRARY_PATH { prepend DYLD_LIBRARY_PATH $1 ':' }
-  function postDYLD_LIBRARY_PATH { postpend DYLD_LIBRARY_PATH $1 ':' }
-elif [ $OS = "linux" ]; then
+if [ $OS = "linux" ]; then
   function preLD_LIBRARY_PATH { prepend LD_LIBRARY_PATH $1 ':' }
   function postLD_LIBRARY_PATH { postpend LD_LIBRARY_PATH $1 ':' }
-fi
-
-if [ $OS = "darwin" -o $OS = "linux" ]; then
-  function prePYTHONPATH() { prepend PYTHONPATH $1 ':' }
-  function postPYTHONPATH() { postpend PYTHONPATH $1 ':' }
-elif [ $OS = "nt" ]; then
-  function prePYTHONPATH() { prepend PYTHONPATH $1 ';' }
-  function postPYTHONPATH() { postpend PYTHONPATH $1 ';' }
+elif [ $OS = "darwin" ]; then
+  function preDYLD_LIBRARY_PATH { prepend DYLD_LIBRARY_PATH $1 ':' }
+  function postDYLD_LIBRARY_PATH { postpend DYLD_LIBRARY_PATH $1 ':' }
 fi
 
 # BULLETTRAIN_PROMPT_ORDER=( custom time status context dir git hg cmd_exec_time perl ruby virtualenv nvm aws go elixir )
@@ -43,6 +57,13 @@ BULLETTRAIN_CUSTOM_BG=green
 BULLETTRAIN_CUSTOM_FG=white
 BULLETTRAIN_PROMPT_CHAR=""
 BULLETTRAIN_DIR_EXTENDED=2
+
+if [ $OS = "linux" ]; then
+  source /usr/share/Modules/init/zsh
+elif [ $OS = "darwin" ]; then
+  source /usr/local/opt/modules/Modules/init/zsh
+fi
+postpend MODULEPATH ~/zsh ':'
 
 ZSHENV_HOSTNAME=~/.zshenv.`hostname -s`
 [[ -f $ZSHENV_HOSTNAME ]] && source $ZSHENV_HOSTNAME
