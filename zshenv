@@ -6,6 +6,7 @@ function getos() {
   fi
 }
 export OS=`getos`
+function getdistro() { lsb_release -i | sed 's,.*:\s,,' }
 
 export MICROSOFT=
 uname -r | grep Microsoft &>/dev/null && export MICROSOFT=1
@@ -78,7 +79,11 @@ BULLETTRAIN_PROMPT_CHAR=""
 BULLETTRAIN_DIR_EXTENDED=2
 
 if [ $OS = "linux" ]; then
-  source /usr/share/Modules/init/zsh
+  if [ `getdistro` = "CentOS" ]; then
+    source /usr/share/Modules/init/zsh
+  else
+    source /usr/share/modules/init/zsh
+  fi
 elif [ $OS = "darwin" ]; then
   source /usr/local/opt/modules/init/zsh
 fi
