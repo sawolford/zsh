@@ -10,24 +10,43 @@ export OS=`getos`
 export MICROSOFT=
 uname -r | grep Microsoft &>/dev/null && export MICROSOFT=1
 
-function varset() { [ ${(P)+1} = "1" ] }
+function varset()
+{
+  if [ $# -ne 1 ]; then
+    echo "Usage: $0 <variable>"
+    return
+  fi
+  [ ${(P)1:+1}1 = "11" ]
+}
 function prepend() {
+  if [ $# -lt 2 -o $# -gt 3 ]; then
+    echo "Usage: $0 <variable> <value> [<separator>=:]"
+    return
+  fi
   echo ${(P)1} | grep -- ${2} 2>&1 >/dev/null
   st=$?
   if [ $st -ne 0 ]; then
     if varset ${1}; then
-      export $1="$2$3${(P)1}"
+      sep=':'
+      [ $# -eq 3 ] && sep=$3
+      export $1="$2${sep}${(P)1}"
     else
       export $1="$2"
     fi
   fi
 }
 function postpend() {
+  if [ $# -lt 2 -o $# -gt 3 ]; then
+    echo "Usage: $0 <variable> <value> [<separator=:>]"
+    return
+  fi
   echo ${(P)1} | grep -- ${2} 2>&1 >/dev/null
   st=$?
   if [ $st -ne 0 ]; then
     if varset ${1}; then
-      export $1="${(P)1}$3$2"
+      sep=':'
+      [ $# -eq 3 ] && sep=$3
+      export $1="${(P)1}${sep}$2"
     else
       export $1="$2"
     fi
@@ -61,8 +80,9 @@ BULLETTRAIN_DIR_EXTENDED=2
 if [ $OS = "linux" ]; then
   source /usr/share/Modules/init/zsh
 elif [ $OS = "darwin" ]; then
-  source /usr/local/opt/modules/Modules/init/zsh
+  source /usr/local/opt/modules/init/zsh
 fi
+postpend MODULEPATH $MODULESHOME/modulefiles ':'
 postpend MODULEPATH ~/zsh ':'
 
 ZSHENV_HOSTNAME=~/.zshenv.`hostname -s`
