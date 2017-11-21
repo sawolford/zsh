@@ -68,15 +68,28 @@ elif [ $OS = "darwin" ]; then
 fi
 
 # BULLETTRAIN_PROMPT_ORDER=( custom time status context dir git hg cmd_exec_time perl ruby virtualenv nvm aws go elixir )
-if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( custom status context dir cmd_exec_time )
-else BULLETTRAIN_PROMPT_ORDER=( custom dir ); fi
-BULLETTRAIN_STATUS_EXIT_SHOW=true
-BULLETTRAIN_PROMPT_SEPARATE_LINE=false
-BULLETTRAIN_CUSTOM_MSG="%!"
-BULLETTRAIN_CUSTOM_BG=green
-BULLETTRAIN_CUSTOM_FG=white
+if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime context module_list cmd_exec_time status dir )
+else BULLETTRAIN_PROMPT_ORDER=( mytime module_list dir ); fi
 BULLETTRAIN_PROMPT_CHAR=""
 BULLETTRAIN_DIR_EXTENDED=2
+BULLETTRAIN_STATUS_EXIT_SHOW=true
+BULLETTRAIN_PROMPT_SEPARATE_LINE=false
+function module_list() { echo 'echo %! $(module list -t |& tail -n +2)' }
+function prompt_module_list()
+{
+  local prompt="$(module list -t |& tail -n +2 | paste -sd ' ' -)"
+  [[ ! -z $prompt ]] && prompt_segment $BULLETTRAIN_MODULE_LIST_BG $BULLETTRAIN_MODULE_LIST_FG "$prompt"
+}
+function prompt_mytime()
+{
+  prompt_segment $BULLETTRAIN_TIME_BG $BULLETTRAIN_TIME_FG "%D{%H:%M %m/%d}"
+}
+BULLETTRAIN_MODULE_LIST_BG=magenta
+BULLETTRAIN_MODULE_LIST_FG=white
+BULLETTRAIN_TIME_BG=green
+BULLETTRAIN_TIME_FG=white
+BULLETTRAIN_CONTEXT_BG=cyan
+BULLETTRAIN_CONTEXT_FG=white
 
 if [ $OS = "linux" ]; then
   if [ `getdistro` = "CentOS" ]; then
