@@ -87,9 +87,9 @@ function prompt_mytime()
 BULLETTRAIN_MODULE_LIST_BG=magenta
 BULLETTRAIN_MODULE_LIST_FG=white
 BULLETTRAIN_TIME_BG=green
-BULLETTRAIN_TIME_FG=white
+BULLETTRAIN_TIME_FG=black
 BULLETTRAIN_CONTEXT_BG=cyan
-BULLETTRAIN_CONTEXT_FG=white
+BULLETTRAIN_CONTEXT_FG=black
 
 if [ $OS = "linux" ]; then
   if [ `getdistro` = "CentOS" ]; then
