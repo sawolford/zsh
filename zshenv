@@ -82,7 +82,7 @@ function prompt_module_list()
 }
 function prompt_mytime()
 {
-  prompt_segment $BULLETTRAIN_TIME_BG $BULLETTRAIN_TIME_FG "%D{%H:%M %m/%d}"
+  prompt_segment $BULLETTRAIN_TIME_BG $BULLETTRAIN_TIME_FG "%D{%H:%M %m/%d} `date +%a`"
 }
 BULLETTRAIN_MODULE_LIST_BG=magenta
 BULLETTRAIN_MODULE_LIST_FG=white
