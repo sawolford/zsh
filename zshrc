@@ -63,8 +63,8 @@ if [ $OS = "linux" ]; then
   builtin alias usr='cd /usr/people/feds'
 elif [ $OS = "darwin" ]; then
   builtin alias ls='gls -F --color=tty'
-  builtin alias ee='open -a "Visual Studio Code"'
   builtin alias usr='cd ~/people/feds'
+  function ee() { open -a /Applications/Visual\ Studio\ Code.app $1 }
 fi
 
 # setopt
@@ -104,8 +104,10 @@ ps -p$PPID | grep wslbridge 2>&1 >/dev/null
 wslb=$?
 # ps -p$PPID | grep konsole 2>&1 >/dev/null
 # ko=$?
+ps -p$PPID | grep /Applications/Visual 2>&1 >/dev/null
+vsc=$?
 if [ -n "$SSH_TTY" ]; then export BULLETTRAIN_IS_SSH_CLIENT=1; fi
-if [ ${TERM_PROGRAM-x} = "iTerm.app" -o $gt -eq 0 -o $wslb -eq 0 ]; then
+if [ ${TERM_PROGRAM-x} = "iTerm.app" -o $gt -eq 0 -o $wslb -eq 0 -o $vsc -eq 0 ]; then
   bullettrain
 else
   zgen oh-my-zsh themes/jreese
