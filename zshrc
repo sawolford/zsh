@@ -59,8 +59,12 @@ builtin alias makev='make VERBOSE=1'
 
 if [ $OS = "linux" ]; then
   builtin alias ls='ls -F --color=tty'
-  builtin alias ee=code
   builtin alias usr='cd /usr/people/feds'
+  if [[ -z $MICROSOFT ]]; then
+    builtin alias ee=code
+  else
+    function ee() { if [ $# -lt 1 ]; then echo "Usage: $0 <filename> [<filename> ...]" ; else Code.exe $*; AutoIt3.exe /AutoIt3ExecuteLine "If AutoItSetOption('WinTitleMatchMode', 2) Then WinActivate('Visual Studio Code')"; fi }
+  fi
 elif [ $OS = "darwin" ]; then
   builtin alias ls='gls -F --color=tty'
   builtin alias usr='cd ~/people/feds'
@@ -106,8 +110,10 @@ wslb=$?
 # ko=$?
 ps -p$PPID | grep /Applications/Visual 2>&1 >/dev/null
 vsc=$?
+ps -p$PPID | grep init 2>&1 >/dev/null
+init=$?
 if [ -n "$SSH_TTY" ]; then export BULLETTRAIN_IS_SSH_CLIENT=1; fi
-if [ ${TERM_PROGRAM-x} = "iTerm.app" -o $gt -eq 0 -o $wslb -eq 0 -o $vsc -eq 0 ]; then
+if [ ${TERM_PROGRAM-x} = "iTerm.app" -o $gt -eq 0 -o $wslb -eq 0 -o $vsc -eq 0 -o $init -eq 0 ]; then
   bullettrain
 else
   zgen oh-my-zsh themes/jreese

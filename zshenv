@@ -103,5 +103,7 @@ fi
 postpend MODULEPATH $MODULESHOME/modulefiles ':'
 postpend MODULEPATH ~/zsh ':'
 
+export EDITOR=vi
+
 ZSHENV_HOSTNAME=~/.zshenv.`hostname -s`
 [[ -f $ZSHENV_HOSTNAME ]] && source $ZSHENV_HOSTNAME
