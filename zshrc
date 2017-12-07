@@ -106,14 +106,14 @@ ps -p$PPID | grep gnome-terminal 2>&1 >/dev/null
 gt=$?
 ps -p$PPID | grep wslbridge 2>&1 >/dev/null
 wslb=$?
-# ps -p$PPID | grep konsole 2>&1 >/dev/null
-# ko=$?
 ps -p$PPID | grep /Applications/Visual 2>&1 >/dev/null
 vsc=$?
 ps -p$PPID | grep init 2>&1 >/dev/null
 init=$?
+ps -p$PPID | grep code 2>&1 >/dev/null
+code=$?
 if [ -n "$SSH_TTY" ]; then export BULLETTRAIN_IS_SSH_CLIENT=1; fi
-if [ ${TERM_PROGRAM-x} = "iTerm.app" -o $gt -eq 0 -o $wslb -eq 0 -o $vsc -eq 0 -o $init -eq 0 ]; then
+if [ ${TERM_PROGRAM-x} = "iTerm.app" -o $gt -eq 0 -o $wslb -eq 0 -o $vsc -eq 0 -o $init -eq 0 -o $code -eq 0 ]; then
   bullettrain
 else
   zgen oh-my-zsh themes/jreese
