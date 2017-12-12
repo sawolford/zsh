@@ -29,7 +29,7 @@ function prepend() {
   echo ${(P)1} | grep -- ${2} 2>&1 >/dev/null
   st=$?
   if [ $st -eq 0 ]; then
-    export $1=`echo $PATH | awk -F${sep} -v x=$2 '{ printf x; for (i = 1; i <= NF; ++i) { if ($i != x) printf ":"$i; } printf "\n"; }'`
+    export $1=`echo $PATH | awk -F${sep} -v path=$2 -v sep=${sep} '{ printf path; for (i = 1; i <= NF; ++i) { if ($i != path) { printf sep; printf $i; } } printf "\n"; }'`
   else
     if varset ${1}; then
       export $1="$2${sep}${(P)1}"
@@ -48,7 +48,7 @@ function postpend() {
   echo ${(P)1} | grep -- ${2} 2>&1 >/dev/null
   st=$?
   if [ $st -eq 0 ]; then
-    export $1=`echo $PATH | awk -F${sep} -v x=$2 '{ for (i = 1; i <= NF; ++i) { if ($i != x) printf $i":"; } printf x"\n"; }'`
+    export $1=`echo $PATH | awk -F${sep} -v path=$2 -v sep=${sep} '{ for (i = 1; i <= NF; ++i) { if ($i != path) { printf $i; printf sep; } } printf path"\n"; }'`
   else
     if varset ${1}; then
       export $1="${(P)1}${sep}$2"
