@@ -22,8 +22,10 @@ fi
  
 builtin alias bullettrain='zgen load caiogondim/bullet-train-oh-my-zsh-theme bullet-train'
 function() grepr() { grep -nrHIE $@ . }
+function() agrepr() { grep -nrHIE $@ ${PWD} }
 builtin alias greprh='grepr --include="*.h"'
 builtin alias greprch='greprh --include="*.c*"'
+builtin alias ngrep='grep -n'
 builtin alias df='df -k'
 builtin alias du='du -k'
 builtin alias ls='ls -F'
@@ -56,6 +58,7 @@ builtin alias seq='seq -w'
 builtin alias hashd='hash -d'
 function makel() { make $* |& less }
 builtin alias makev='make VERBOSE=1'
+function killcode() { kill `ps -eo pid,command | grep code/code$ | awk '{print $1}'` }
 
 if [ $OS = "linux" ]; then
   builtin alias ls='ls -F --color=tty'
