@@ -26,17 +26,7 @@ function prepend() {
   fi
   sep=':'
   [ $# -eq 3 ] && sep=$3
-  echo ${(P)1} | grep -- ${2} 2>&1 >/dev/null
-  st=$?
-  if [ $st -eq 0 ]; then
-    export $1=`echo $PATH | awk -F${sep} -v path=$2 -v sep=${sep} '{ printf path; for (i = 1; i <= NF; ++i) { if ($i != path) { printf sep; printf $i; } } printf "\n"; }'`
-  else
-    if varset ${1}; then
-      export $1="$2${sep}${(P)1}"
-    else
-      export $1="$2"
-    fi
-  fi
+  eval export $1="$(echo ${(P)1} | awk -F${sep} -v path="$2" -v sep=${sep} -v nada=\"\" '{ printf "\""path"\""; for (i = 1; i <= NF; ++i) { if ($i != path) { printf sep; printf "\""$i"\""; } } print nada; }')"
 }
 function postpend() {
   if [ $# -lt 2 -o $# -gt 3 ]; then
@@ -45,17 +35,7 @@ function postpend() {
   fi
   sep=':'
   [ $# -eq 3 ] && sep=$3
-  echo ${(P)1} | grep -- ${2} 2>&1 >/dev/null
-  st=$?
-  if [ $st -eq 0 ]; then
-    export $1=`echo $PATH | awk -F${sep} -v path=$2 -v sep=${sep} '{ for (i = 1; i <= NF; ++i) { if ($i != path) { printf $i; printf sep; } } printf path"\n"; }'`
-  else
-    if varset ${1}; then
-      export $1="${(P)1}${sep}$2"
-    else
-      export $1="$2"
-    fi
-  fi
+  eval export $1="$(echo ${(P)1} | awk -F${sep} -v path="$2" -v sep=${sep} '{ for (i = 1; i <= NF; ++i) { if ($i != path) { printf "\""$i"\""; printf sep; } } print "\""path"\""; }')"
 }
 
 function prePATH() { prepend PATH $1 ':' }
