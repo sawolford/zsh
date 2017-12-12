@@ -24,12 +24,14 @@ function prepend() {
     echo "Usage: $0 <variable> <value> [<separator>=:]"
     return
   fi
+  sep=':'
+  [ $# -eq 3 ] && sep=$3
   echo ${(P)1} | grep -- ${2} 2>&1 >/dev/null
   st=$?
-  if [ $st -ne 0 ]; then
+  if [ $st -eq 0 ]; then
+    export $1=`echo $PATH | awk -F${sep} -v x=$2 '{ printf x; for (i = 1; i <= NF; ++i) { if ($i != x) printf ":"$i; } printf "\n"; }'`
+  else
     if varset ${1}; then
-      sep=':'
-      [ $# -eq 3 ] && sep=$3
       export $1="$2${sep}${(P)1}"
     else
       export $1="$2"
@@ -41,12 +43,14 @@ function postpend() {
     echo "Usage: $0 <variable> <value> [<separator=:>]"
     return
   fi
+  sep=':'
+  [ $# -eq 3 ] && sep=$3
   echo ${(P)1} | grep -- ${2} 2>&1 >/dev/null
   st=$?
-  if [ $st -ne 0 ]; then
+  if [ $st -eq 0 ]; then
+    export $1=`echo $PATH | awk -F${sep} -v x=$2 '{ for (i = 1; i <= NF; ++i) { if ($i != x) printf $i":"; } printf x"\n"; }'`
+  else
     if varset ${1}; then
-      sep=':'
-      [ $# -eq 3 ] && sep=$3
       export $1="${(P)1}${sep}$2"
     else
       export $1="$2"
