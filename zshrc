@@ -30,6 +30,7 @@ builtin alias df='df -k'
 builtin alias du='du -k'
 builtin alias ls='ls -F'
 builtin alias ll='ls -l'
+builtin alias lt='ls -ltr'
 builtin alias rm='rm -i'
 builtin alias mv='mv -i'
 builtin alias cp='cp -i'
@@ -44,7 +45,6 @@ builtin alias diff='diff -w'
 function h1() { if [ $# -eq 0 ]; then history; else history | grep $1; fi }
 function pkfindi() { if [ $# -eq 0 ]; then find .; else find . -name "$@"; fi }
 function pkfind() { if [ $# -eq 0 ]; then find .; else find . -iname "$@"; fi }
-#builtin alias pkfind='find . -name'
 function find0() { find . "$@" -print0 }
 builtin alias xargs0='xargs -0'
 function md5txt() { if [ $# -eq 0 ]; then find0 -type f | xargs0 md5sum | tee md5.txt; else md5sum "$@" | tee md5.txt; fi }
@@ -58,21 +58,27 @@ builtin alias seq='seq -w'
 builtin alias hashd='hash -d'
 function makel() { make $* |& less }
 builtin alias makev='make VERBOSE=1'
+builtin alias makej='make depend; make -kj; make'
 function killcode() { kill `ps -eo pid,command | grep code/code$ | awk '{print $1}'` }
 
 if [ $OS = "linux" ]; then
   builtin alias ls='ls -F --color=tty'
   builtin alias usr='cd /usr/people/feds'
   if [[ -z $MICROSOFT ]]; then
-    builtin alias ee=code
+    EECMD="code"
+    builtin alias ee=${EECMD}
   else
-    function ee() { if [ $# -lt 1 ]; then echo "Usage: $0 <filename> [<filename> ...]" ; else Code.exe $*; AutoIt3.exe /AutoIt3ExecuteLine "If AutoItSetOption('WinTitleMatchMode', 2) Then WinActivate('Visual Studio Code')"; fi }
+    EECMD="Code.exe"
+    function ee() { if [ $# -lt 1 ]; then echo "Usage: $0 <filename> [<filename> ...]" ; else eval ${EECMD} $*; AutoIt3.exe /AutoIt3ExecuteLine "If AutoItSetOption('WinTitleMatchMode', 2) Then WinActivate('Visual Studio Code')"; fi }
   fi
 elif [ $OS = "darwin" ]; then
   builtin alias ls='gls -F --color=tty'
+  builtin alias md5sum=gmd5sum
   builtin alias usr='cd ~/people/feds'
-  function ee() { open -a /Applications/Visual\ Studio\ Code.app $1 }
+  EECMD="open -a /Applications/Visual\ Studio\ Code.app"
+  function ee() { [ ! -e $1 ] && touch $1; eval ${EECMD} $1 }
 fi
+function findee() { if [ $# -eq 0 ]; then echo "Usage: $0 <predicates>"; else find0 -name "$@" | eval xargs -0 ${EECMD}; fi }
 
 # setopt
 setopt auto_list # list choices on ambiguous completions
