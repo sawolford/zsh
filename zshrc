@@ -23,6 +23,7 @@ fi
 builtin alias bullettrain='zgen load caiogondim/bullet-train-oh-my-zsh-theme bullet-train'
 function() grepr() { grep -nrHIE $@ . }
 function() agrepr() { grep -nrHIE $@ ${PWD} }
+function() wagrepr() { agrepr --color=always $@ | sed 's,/mnt/\(.\)/,\1:/,' }
 builtin alias greprh='grepr --include="*.h"'
 builtin alias greprch='greprh --include="*.c*"'
 builtin alias ngrep='grep -n'
