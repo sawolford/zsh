@@ -58,10 +58,9 @@ BULLETTRAIN_PROMPT_CHAR=""
 BULLETTRAIN_DIR_EXTENDED=2
 BULLETTRAIN_STATUS_EXIT_SHOW=true
 BULLETTRAIN_PROMPT_SEPARATE_LINE=false
-function module_list() { echo 'echo %! $(module list -t |& tail -n +2)' }
 function prompt_module_list()
 {
-  local prompt="$(module list -t |& tail -n +2 | paste -sd ' ' -)"
+  local prompt="$(module list |& tail -n +2 | sed 's, .),,g' | tr -s " " | paste -sd ' ' -)"
   [[ ! -z $prompt ]] && prompt_segment $BULLETTRAIN_MODULE_LIST_BG $BULLETTRAIN_MODULE_LIST_FG "$prompt"
 }
 function prompt_mytime()
@@ -88,6 +87,9 @@ postpend MODULEPATH $MODULESHOME/modulefiles ':'
 postpend MODULEPATH ~/zsh ':'
 
 export EDITOR=vi
+export PAGER=
+export GIT_PAGER=less
+export MANPAGER=less
 
 ZSHENV_HOSTNAME=~/.zshenv.`hostname -s`
 [[ -f $ZSHENV_HOSTNAME ]] && source $ZSHENV_HOSTNAME
