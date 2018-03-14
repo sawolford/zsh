@@ -61,10 +61,11 @@ function makel() { make $* |& less }
 builtin alias makev='make VERBOSE=1'
 builtin alias makej='make depend; make -kj; make'
 function killcode() { kill `ps -eo pid,command | grep code/code$ | awk '{print $1}'` }
+builtin alias gove='cd $VIRTUAL_ENV'
 
 if [ $OS = "linux" ]; then
   builtin alias ls='ls -F --color=tty'
-  builtin alias usr='cd /usr/people/feds'
+  builtin alias gousr='cd /usr/people/feds'
   if [[ -z $MICROSOFT ]]; then
     EECMD="code"
     builtin alias ee=${EECMD}
@@ -75,7 +76,7 @@ if [ $OS = "linux" ]; then
 elif [ $OS = "darwin" ]; then
   builtin alias ls='gls -F --color=tty'
   builtin alias md5sum=gmd5sum
-  builtin alias usr='cd ~/people/feds'
+  builtin alias gousr='cd ~/people/feds'
   EECMD="open -a /Applications/Visual\ Studio\ Code.app"
   function ee() { [ ! -e $1 ] && touch $1; eval ${EECMD} $1 }
 fi
