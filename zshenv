@@ -52,7 +52,7 @@ elif [ $OS = "darwin" ]; then
 fi
 
 # BULLETTRAIN_PROMPT_ORDER=( custom time status context dir git hg cmd_exec_time perl ruby virtualenv nvm aws go elixir )
-if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime context module_list cmd_exec_time status dir )
+if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list cmd_exec_time status dir )
 else BULLETTRAIN_PROMPT_ORDER=( mytime module_list dir ); fi
 BULLETTRAIN_PROMPT_CHAR=""
 BULLETTRAIN_DIR_EXTENDED=2
@@ -65,7 +65,25 @@ function prompt_module_list()
 }
 function prompt_mytime()
 {
-  prompt_segment $BULLETTRAIN_TIME_BG $BULLETTRAIN_TIME_FG "%D{%H:%M %m/%d} `date +%a`"
+  prompt_segment $BULLETTRAIN_TIME_BG $BULLETTRAIN_TIME_FG "%D{%H:%M %m/%d}"
+}
+mycontext()
+{
+  local user="$(whoami)"
+  if [[ "$user" != "$BULLETTRAIN_CONTEXT_DEFAULT_USER" || -n "$BULLETTRAIN_IS_SSH_CLIENT" ]]; then
+    if [[ -v BULLETTRAIN_CONTEXT_LENGTH ]]; then
+      user=`echo $user | cut -b 1-$BULLETTRAIN_CONTEXT_LENGTH`
+      local host=`hostname | cut -b 1-$BULLETTRAIN_CONTEXT_LENGTH`
+      echo -n "${user}*@${host}*"
+    else
+      echo -n "${user}@$BULLETTRAIN_CONTEXT_HOSTNAME"
+    fi
+  fi
+}
+function prompt_mycontext()
+{
+  local _context="$(mycontext)"
+  [[ -n "$_context" ]] && prompt_segment $BULLETTRAIN_CONTEXT_BG $BULLETTRAIN_CONTEXT_FG "$_context"
 }
 BULLETTRAIN_MODULE_LIST_BG=magenta
 BULLETTRAIN_MODULE_LIST_FG=white
