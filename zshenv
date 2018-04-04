@@ -46,9 +46,13 @@ function postPYTHONPATH() { postpend PYTHONPATH $1 ':' }
 if [ $OS = "linux" ]; then
   function preLD_LIBRARY_PATH { prepend LD_LIBRARY_PATH $1 ':' }
   function postLD_LIBRARY_PATH { postpend LD_LIBRARY_PATH $1 ':' }
+  export PEOPLE_DIR=/usr/people/feds
 elif [ $OS = "darwin" ]; then
   function preDYLD_LIBRARY_PATH { prepend DYLD_LIBRARY_PATH $1 ':' }
   function postDYLD_LIBRARY_PATH { postpend DYLD_LIBRARY_PATH $1 ':' }
+  export PEOPLE_DIR=~/people/feds
+elif [[ ! -z $MICROSOFT ]]; then
+  export PEOPLE_DIR=/mnt/c/people/feds
 fi
 
 # BULLETTRAIN_PROMPT_ORDER=( custom time status context dir git hg cmd_exec_time perl ruby virtualenv nvm aws go elixir )
