@@ -75,10 +75,13 @@ mycontext()
 {
   local user="$(whoami)"
   if [[ "$user" != "$BULLETTRAIN_CONTEXT_DEFAULT_USER" || -n "$BULLETTRAIN_IS_SSH_CLIENT" ]]; then
-    if [[ ! -z ${BULLETTRAIN_CONTEXT_LENGTH+x} ]]; then
-      user=`echo $user | cut -b 1-$BULLETTRAIN_CONTEXT_LENGTH`
-      local host=`hostname | cut -b 1-$BULLETTRAIN_CONTEXT_LENGTH`
-      echo -n "${user}*@${host}*"
+    if [ ! -z ${BULLETTRAIN_CONTEXT_LENGTH+x} -a $BULLETTRAIN_CONTEXT_LENGTH -gt 0 ]; then
+      local suser=`echo $user | cut -b 1-$BULLETTRAIN_CONTEXT_LENGTH`
+      local host=`hostname`
+      local shost=`echo $host | cut -b 1-$BULLETTRAIN_CONTEXT_LENGTH`
+      if [[ $user != $suser ]]; then suser="$suser*"; fi
+      if [[ $host != $shost ]]; then shost="$shost*"; fi
+      echo -n "${suser}@$shost"
     else
       echo -n "${user}@$BULLETTRAIN_CONTEXT_HOSTNAME"
     fi
