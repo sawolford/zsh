@@ -77,7 +77,7 @@ mycontext()
   if [[ "$user" != "$BULLETTRAIN_CONTEXT_DEFAULT_USER" || -n "$BULLETTRAIN_IS_SSH_CLIENT" ]]; then
     if [ ! -z ${BULLETTRAIN_CONTEXT_LENGTH+x} -a $BULLETTRAIN_CONTEXT_LENGTH -gt 0 ]; then
       local suser=`echo $user | cut -b 1-$BULLETTRAIN_CONTEXT_LENGTH`
-      local host=`hostname`
+      local host=`hostname -s`
       local shost=`echo $host | cut -b 1-$BULLETTRAIN_CONTEXT_LENGTH`
       if [[ $user != $suser ]]; then suser="$suser*"; fi
       if [[ $host != $shost ]]; then shost="$shost*"; fi
