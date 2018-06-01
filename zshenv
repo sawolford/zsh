@@ -6,7 +6,18 @@ function getos() {
   fi
 }
 export OS=`getos`
-function getdistro() { lsb_release -i | sed 's,.*:\s,,' }
+function getdistro()
+{
+  if type lsb_release >/dev/null; then
+    rv=$(lsb_release -i | sed 's,.*:\s,,')
+  elif [ -e /etc/redhat-release ]; then
+    rv=$(cat /etc/redhat-release | sed 's, Server release .*,,')
+  else
+    rv="Unknown"
+  fi
+  echo $rv
+}
+DISTRO=`getdistro`
 
 export MICROSOFT=
 uname -r | grep Microsoft &>/dev/null && export MICROSOFT=1
@@ -100,10 +111,12 @@ BULLETTRAIN_CONTEXT_BG=cyan
 BULLETTRAIN_CONTEXT_FG=black
 
 if [ $OS = "linux" ]; then
-  if [ `getdistro` = "CentOS" ]; then
+  if [ $DISTRO = "CentOS" -o $DISTRO = "Red Hat Enterprise Linux" ]; then
     source /usr/share/Modules/init/zsh
-  else
+  elif [ $DISTRO = "Ubuntu" ]; then
     source /usr/share/modules/init/zsh
+  else
+    echo "No environment modules!"
   fi
 elif [ $OS = "darwin" ]; then
   source /usr/local/opt/modules/init/zsh
