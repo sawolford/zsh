@@ -59,6 +59,7 @@ builtin alias seq='seq -w'
 builtin alias hashd='hash -d'
 function makel() { make $* |& less }
 builtin alias makev='make VERBOSE=1'
+function makevl() { makev $* |& less }
 builtin alias makej='make depend; make -kj$(nproc); make'
 function killcode() { kill `ps -eo pid,command | grep code/code$ | awk '{print $1}'` }
 builtin alias gove='cd $VIRTUAL_ENV'
