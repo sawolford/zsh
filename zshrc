@@ -66,6 +66,7 @@ builtin alias gove='cd $VIRTUAL_ENV'
 function gousr() { cd $PEOPLE_DIR/.. }
 function stmux() { ssh -t $@ "tmux new -A -s tmux" }
 builtin alias ltmux='tmux new -A -s tmux'
+function fixssh() { eval $(tmux show-env | sed -n 's/^\(SSH_[^=]*\)=\(.*\)/export \1="\2"/p') }
 
 if [ $OS = "linux" ]; then
   builtin alias ls='ls -F --color=tty'
