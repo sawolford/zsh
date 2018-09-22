@@ -60,13 +60,14 @@ builtin alias hashd='hash -d'
 function makel() { make $* |& less }
 builtin alias makev='make VERBOSE=1'
 function makevl() { makev $* |& less }
-builtin alias makej='make depend; make -kj$(nproc); make'
+builtin alias makej='make depend; make -kj$(nproc) $*; make'
 function killcode() { kill `ps -eo pid,command | grep code/code$ | awk '{print $1}'` }
 builtin alias gove='cd $VIRTUAL_ENV'
 function gousr() { cd $PEOPLE_DIR/.. }
 function stmux() { ssh -t $@ "tmux new -A -s tmux" }
 builtin alias ltmux='tmux new -A -s tmux'
 function fixssh() { eval $(tmux show-env | sed -n 's/^\(SSH_[^=]*\)=\(.*\)/export \1="\2"/p') }
+function calc() { bc -l <<< "$@" }
 
 if [ $OS = "linux" ]; then
   builtin alias ls='ls -F --color=tty'
@@ -80,12 +81,22 @@ if [ $OS = "linux" ]; then
 elif [ $OS = "darwin" ]; then
   builtin alias ls='gls -F --color=tty'
   builtin alias md5sum=gmd5sum
+  builtin alias nproc=gnproc
   EECMD="open -a /Applications/Visual\ Studio\ Code.app"
-  function ee() { [ ! -e $1 ] && touch $1; eval ${EECMD} $1 }
+  function ee()
+  {
+    for i in $*; do
+      [ ! -e $i ] && touch $i
+      eval ${EECMD} $i
+    done
+  }
+  function growl() { osascript -e "display notification \"$1\" with title \"Title\"" }
+  function growlsound() { osascript -e "display notification \"$1\" sound name \"Glass\" with title \"Title\"" }
 fi
 function findee() { if [ $# -eq 0 ]; then echo "Usage: $0 <predicates>"; else find0 -name "$@" | eval xargs -0 ${EECMD}; fi }
 
 # setopt
+setopt no_global_rcs # don't load /etc/*
 setopt auto_list # list choices on ambiguous completions
 unsetopt auto_menu # "
 setopt ignore_eof # eof(^D) doesn't quit shell
@@ -124,7 +135,7 @@ ps -p$PPID | grep /Applications/Visual 2>&1 >/dev/null
 vsc=$?
 ps -p$PPID | grep init 2>&1 >/dev/null
 init=$?
-ps -p$PPID | grep code 2>&1 >/dev/null
+ps -p$PPID | grep Code 2>&1 >/dev/null
 code=$?
 ps -p$PPID | grep tmux 2>&1 >/dev/null
 tmux=$?
