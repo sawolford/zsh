@@ -64,11 +64,12 @@ elif [ $OS = "darwin" ]; then
   function preDYLD_LIBRARY_PATH { prepend DYLD_LIBRARY_PATH $1 ':' }
   function postDYLD_LIBRARY_PATH { postpend DYLD_LIBRARY_PATH $1 ':' }
   export PEOPLE_DIR=~/people/feds
+  prePATH /usr/local/bin
 fi
 
 # BULLETTRAIN_PROMPT_ORDER=( custom time status context dir git hg cmd_exec_time perl ruby virtualenv nvm aws go elixir )
 if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list cmd_exec_time status dir )
-else BULLETTRAIN_PROMPT_ORDER=( mytime module_list dir ); fi
+else BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list dir ); fi
 BULLETTRAIN_PROMPT_CHAR=""
 BULLETTRAIN_DIR_EXTENDED=2
 BULLETTRAIN_STATUS_EXIT_SHOW=true
@@ -85,14 +86,16 @@ function prompt_mytime()
 mycontext()
 {
   local user="$(whoami)"
-  if [[ "$user" != "$BULLETTRAIN_CONTEXT_DEFAULT_USER" || -n "$BULLETTRAIN_IS_SSH_CLIENT" ]]; then
-    if [ ! -z ${BULLETTRAIN_CONTEXT_LENGTH+x} -a $BULLETTRAIN_CONTEXT_LENGTH -gt 0 ]; then
-      local suser=`echo $user | cut -b 1-$BULLETTRAIN_CONTEXT_LENGTH`
-      local host=`hostname -s`
-      local shost=`echo $host | cut -b 1-$BULLETTRAIN_CONTEXT_LENGTH`
-      if [[ $user != $suser ]]; then suser="$suser*"; fi
-      if [[ $host != $shost ]]; then shost="$shost*"; fi
-      echo -n "${suser}@$shost"
+  if [[ $user != $BULLETTRAIN_CONTEXT_DEFAULT_USER || -n $BULLETTRAIN_IS_SSH_CLIENT ]]; then
+    if [ ! -z ${BULLETTRAIN_CONTEXT_LENGTH+x} ]; then
+      if [ $BULLETTRAIN_CONTEXT_LENGTH -gt 0 ]; then
+        local suser=`echo $user | cut -b 1-$BULLETTRAIN_CONTEXT_LENGTH`
+        local host=`hostname -s`
+        local shost=`echo $host | cut -b 1-$BULLETTRAIN_CONTEXT_LENGTH`
+        if [[ $user != $suser ]]; then suser="$suser*"; fi
+        if [[ $host != $shost ]]; then shost="$shost*"; fi
+        echo -n "${suser}@$shost"
+      fi
     else
       echo -n "${user}@$BULLETTRAIN_CONTEXT_HOSTNAME"
     fi
@@ -122,9 +125,10 @@ elif [ $OS = "darwin" ]; then
   source /usr/local/opt/modules/init/zsh
 fi
 postpend MODULEPATH $MODULESHOME/modulefiles ':'
-postpend MODULEPATH ~/zsh ':'
+postpend MODULEPATH ~/zsh/modulefiles ':'
 
 export EDITOR=vi
+export LESS=-RF
 export PAGER=
 export GIT_PAGER=less
 export MANPAGER=less
