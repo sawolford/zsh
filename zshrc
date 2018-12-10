@@ -7,6 +7,8 @@ export WORDCHARS=',*?_-.~=&;!#$%^(){}<>'
 if ! zgen saved; then
 
   # specify plugins here
+#  plugins=()
+
   zgen oh-my-zsh
 #  zgen oh-my-zsh themes/arrow
 #  zgen oh-my-zsh themes/agnoster
@@ -17,13 +19,16 @@ if ! zgen saved; then
 #  zgen oh-my-zsh themes/myagnoster
 
   # generate the init script from plugins above
+  # remove ~/.zgen/init.zsh to regenerate
   zgen save
 fi
- 
+
 builtin alias bullettrain='zgen load caiogondim/bullet-train-oh-my-zsh-theme bullet-train'
 function() grepr() { grep -nrHIE $@ . }
 function() agrepr() { grep -nrHIE $@ ${PWD} }
 function() wagrepr() { agrepr --color=always $@ | sed 's,/mnt/\(.\)/,\1:/,' }
+function() aack() { ack --nogroup $@ ${PWD} }
+function() aag() { ag --nogroup $@ ${PWD} }
 builtin alias greprh='grepr --include="*.h"'
 builtin alias greprch='greprh --include="*.c*"'
 builtin alias ngrep='grep -n'
@@ -43,7 +48,8 @@ builtin alias lnf='command ln'
 builtin alias wcl='wc -l'
 builtin alias mkdir='nocorrect mkdir -p'
 builtin alias diff='diff -w'
-function h1() { if [ $# -eq 0 ]; then history; else history | grep $1; fi }
+function hh1() { if [ $# -eq 0 ]; then fc -l 1; else fc -l 1 | grep $1; fi }
+function hl1() { if [ $# -eq 0 ]; then fc -lI 1; else fc -lI 1 | grep $1; fi }
 function pkfindi() { if [ $# -eq 0 ]; then find .; else find . -name "$@"; fi }
 function pkfind() { if [ $# -eq 0 ]; then find .; else find . -iname "$@"; fi }
 function find0() { find . "$@" -print0 }
