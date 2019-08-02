@@ -11,7 +11,7 @@ function getdistro()
   if type lsb_release >/dev/null; then
     rv=$(lsb_release -i | sed 's,.*:\s,,')
   elif [ -e /etc/redhat-release ]; then
-    rv=$(cat /etc/redhat-release | sed 's, Server release .*,,')
+    rv=$(cat /etc/redhat-release | sed 's@ \(Server \)\{0,1\}release .*@@')
   else
     rv="Unknown"
   fi
@@ -114,7 +114,7 @@ BULLETTRAIN_CONTEXT_BG=cyan
 BULLETTRAIN_CONTEXT_FG=black
 
 if [ $OS = "linux" ]; then
-  if [ $DISTRO = "CentOS" -o $DISTRO = "Red Hat Enterprise Linux" ]; then
+  if [ $DISTRO = "CentOS Linux" -o $DISTRO = "Red Hat Enterprise Linux" ]; then
     source /usr/share/Modules/init/zsh
   elif [ $DISTRO = "Ubuntu" ]; then
     source /usr/share/modules/init/zsh
