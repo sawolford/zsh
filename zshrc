@@ -10,6 +10,7 @@ if ! zgen saved; then
 #  plugins=()
 
   zgen oh-my-zsh
+  zgen load Tarrasch/zsh-autoenv
 #  zgen oh-my-zsh themes/arrow
 #  zgen oh-my-zsh themes/agnoster
 #  zgen oh-my-zsh themes/jreese
@@ -23,7 +24,7 @@ if ! zgen saved; then
   zgen save
 fi
 
-builtin alias bullettrain='zgen load caiogondim/bullet-train-oh-my-zsh-theme bullet-train'
+builtin alias bullettrain='zgen load caiogondim/bullet-train-oh-my-zsh-theme bullet-train; clear'
 function() grepr() { grep -nrHIE $@ . }
 function() agrepr() { grep -nrHIE $@ ${PWD} }
 function() wagrepr() { agrepr --color=always $@ | sed 's,/mnt/\(.\)/,\1:/,' }
@@ -91,9 +92,9 @@ elif [ $OS = "darwin" ]; then
   EECMD="open -a /Applications/Visual\ Studio\ Code.app"
   function ee()
   {
-    for i in $*; do
-      [ ! -e $i ] && touch $i
-      eval ${EECMD} $i
+    for i in "$@"; do
+      [ ! -e $i ] && touch "$i"
+      eval ${EECMD} \"$i\"
     done
   }
   function growl() { osascript -e "display notification \"$1\" with title \"Title\"" }

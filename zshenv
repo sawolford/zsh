@@ -128,7 +128,7 @@ postpend MODULEPATH $MODULESHOME/modulefiles ':'
 postpend MODULEPATH ~/zsh/modulefiles ':'
 
 export EDITOR=vi
-export LESS=-RF
+export LESS=-RFX
 export PAGER=
 export GIT_PAGER=less
 export MANPAGER=less
