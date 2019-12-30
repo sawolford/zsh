@@ -24,6 +24,7 @@ if ! zgen saved; then
   zgen save
 fi
 
+function exists { which $1 &> /dev/null }
 builtin alias bullettrain='zgen load caiogondim/bullet-train-oh-my-zsh-theme bullet-train; clear'
 function() grepr() { grep -nrHIE $@ . }
 function() agrepr() { grep -nrHIE $@ ${PWD} }
@@ -75,6 +76,101 @@ function stmux() { ssh -t $@ "tmux new -A -s tmux" }
 builtin alias ltmux='tmux new -A -s tmux'
 function fixssh() { eval $(tmux show-env | sed -n 's/^\(SSH_[^=]*\)=\(.*\)/export \1="\2"/p') }
 function calc() { bc -l <<< "$@" }
+export NNN_TMPFILE="/tmp/nnn"
+nn() {
+	export NNN_CONTEXT_COLORS='4321'
+        PAGER=less LESS=-RX nnn "$@"
+
+        if [ -f $NNN_TMPFILE ]; then
+                . $NNN_TMPFILE
+                command rm -f $NNN_TMPFILE
+        fi
+}
+function makeall()
+{
+  if (( ${+SYSTEMROOT} )); then
+    fargs=VS16
+    if [ $# -gt 0 ]; then; set -A fargs $@; fi
+    for i in $fargs; do
+      cmake.exe --build $i --config Debug
+      cmake.exe --build $i --config Release
+    done
+  else
+    bargs=
+    if [ $# -gt 0 ]; then; set -A bargs --target $@; fi
+    for i in DebugGcc DebugClang ReleaseGcc ReleaseClang; do
+      cmake --build $i --target depend
+      cmake --build $i -j$(nproc) $bargs
+    done
+  fi
+}
+if exists percol; then
+    function percol_select_history() {
+        local tac
+        exists gtac && tac="gtac" || { exists tac && tac="tac" || { tac="tail -r" } }
+        BUFFER=$(fc -l -n 1 | eval $tac | percol --query "$LBUFFER")
+        CURSOR=$#BUFFER         # move cursor
+        zle -R -c               # refresh
+    }
+    zle -N percol_select_history
+    bindkey '^R' percol_select_history
+
+    function percol_select_local_history() {
+        local tac
+        exists gtac && tac="gtac" || { exists tac && tac="tac" || { tac="tail -r" } }
+        BUFFER=$(fc -I -l -n 1 | eval $tac | percol --query "$LBUFFER")
+        CURSOR=$#BUFFER         # move cursor
+        zle -R -c               # refresh
+    }
+    zle -N percol_select_local_history
+    bindkey '^S' percol_select_local_history
+fi
+if exists jump; then eval "$(jump shell zsh --bind=jj)"; fi
+if ! exists pixz; then builtin alias pixz='xz -T 0'; fi
+tpxz() {
+    if [ $# -lt 1 ]; then
+        echo "Usage: $0 <file> [<file> ...]"
+        echo
+        echo "       $0 <file>"
+        echo "           Writes <file.xz>"
+        echo "       $0 <file> <file> [<file> ...]"
+        echo "           Writes to stdout: tar cf - <file> [<file> ...] | pixz -9"
+        return
+    fi
+    if [ $# -eq 1 -a -f $1 ]; then
+        file=$1
+        if [ -e $file.xz ]; then echo $file.xz exists; return; fi
+        if pv $file | pixz -9 > $file.xz; then
+            rm -f $file
+        else
+            rm -f $file.xz
+        fi
+    else
+        size=`du -sbc $@ | tail -1 | cut -f1`
+        tar cf - $@ | pv -s $size | pixz -9
+    fi
+}
+function ctpxz() {
+    folder=$(basename $(pwd))
+    pushd .. >/dev/null
+    tpxz $folder > $folder.tlz
+    popd >/dev/null
+}
+function myscp() {
+    local args dest
+    while (($#)); do
+        case $1 in
+            -t) dest="$2"
+                shift
+                ;;
+            * ) args+=("$1")
+                ;;
+        esac
+        shift
+    done
+    echo scp $args $dest
+    scp $args $dest
+}
 
 if [ $OS = "linux" ]; then
   builtin alias ls='ls -F --color=tty'

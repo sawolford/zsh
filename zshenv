@@ -54,18 +54,24 @@ function postPATH() { postpend PATH $1 ':' }
 function prePYTHONPATH() { prepend PYTHONPATH $1 ':' }
 function postPYTHONPATH() { postpend PYTHONPATH $1 ':' }
 
+export EDITOR=vi
+
 if [[ ! -z $MICROSOFT ]]; then
   export PEOPLE_DIR=/mnt/c/people/feds
 elif [ $OS = "linux" ]; then
   function preLD_LIBRARY_PATH { prepend LD_LIBRARY_PATH $1 ':' }
   function postLD_LIBRARY_PATH { postpend LD_LIBRARY_PATH $1 ':' }
   export PEOPLE_DIR=/usr/people/feds
+  export EDITOR="geany -imnst"
 elif [ $OS = "darwin" ]; then
   function preDYLD_LIBRARY_PATH { prepend DYLD_LIBRARY_PATH $1 ':' }
   function postDYLD_LIBRARY_PATH { postpend DYLD_LIBRARY_PATH $1 ':' }
   export PEOPLE_DIR=~/people/feds
-  prePATH /usr/local/bin
+  prePATH ~/Library/Python/3.7/bin
+  export EDITOR='/usr/bin/open -n -W -e'
 fi
+prePATH ~/bin
+prePATH /usr/local/bin
 
 # BULLETTRAIN_PROMPT_ORDER=( custom time status context dir git hg cmd_exec_time perl ruby virtualenv nvm aws go elixir )
 if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list cmd_exec_time status dir )
@@ -127,7 +133,6 @@ fi
 postpend MODULEPATH $MODULESHOME/modulefiles ':'
 postpend MODULEPATH ~/zsh/modulefiles ':'
 
-export EDITOR=vi
 export LESS=-RFX
 export PAGER=
 export GIT_PAGER=less
