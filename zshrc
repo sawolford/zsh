@@ -1,31 +1,29 @@
-# load zgen
-source ~/.zgen/zgen.zsh
+source ~/.zplug/init.zsh
 
-export WORDCHARS=',*?_-.~=&;!#$%^(){}<>'
+zplug "caiogondim/bullet-train.zsh", use:bullet-train.zsh-theme, defer:3
+zplug "zsh-users/zsh-history-substring-search", defer:3
+# zplug install
+zplug load
 
-# if the init scipt doesn't exist
-if ! zgen saved; then
-
-  # specify plugins here
-#  plugins=()
-
-  zgen oh-my-zsh
-  zgen load Tarrasch/zsh-autoenv
-#  zgen oh-my-zsh themes/arrow
-#  zgen oh-my-zsh themes/agnoster
-#  zgen oh-my-zsh themes/jreese
-#  zgen oh-my-zsh themes/muse
-#  zgen oh-my-zsh themes/nebirhos
-#  zgen oh-my-zsh themes/pygmalion
-#  zgen oh-my-zsh themes/myagnoster
-
-  # generate the init script from plugins above
-  # remove ~/.zgen/init.zsh to regenerate
-  zgen save
+KEYTIMEOUT=1
+bindkey -e
+if zplug check zsh-users/zsh-history-substring-search; then
+  bindkey "$terminfo[kcuu1]" history-substring-search-up
+  bindkey "$key[Up]" history-substring-search-up
+  bindkey '^[[A' history-substring-search-up
+  bindkey "$terminfo[kcud1]" history-substring-search-down
+  bindkey "$key[Down]" history-substring-search-down
+  bindkey '^[[B' history-substring-search-down
 fi
+bindkey "$terminfo[kLFT5]" backward-word
+bindkey "$terminfo[kRIT5]" forward-word
+bindkey "^[\"" quote-region
+bindkey "^[W" copy-region-as-kill
+bindkey "^[w" kill-region
 
 function exists { which $1 &> /dev/null }
-builtin alias bullettrain='zgen load caiogondim/bullet-train-oh-my-zsh-theme bullet-train; clear'
+builtin alias bullettrain='SEGMENT_SEPARATOR=""'
+builtin alias nobullettrain='SEGMENT_SEPARATOR=" "'
 function() grepr() { grep -nrHIE $@ . }
 function() agrepr() { grep -nrHIE $@ ${PWD} }
 function() wagrepr() { agrepr --color=always $@ | sed 's,/mnt/\(.\)/,\1:/,' }
@@ -49,7 +47,6 @@ builtin alias cpf='command cp'
 builtin alias lnf='command ln'
 builtin alias wcl='wc -l'
 builtin alias mkdir='nocorrect mkdir -p'
-builtin alias diff='diff -w'
 function hh1() { if [ $# -eq 0 ]; then fc -l 1; else fc -l 1 | grep $1; fi }
 function hl1() { if [ $# -eq 0 ]; then fc -lI 1; else fc -lI 1 | grep $1; fi }
 function pkfindi() { if [ $# -eq 0 ]; then find .; else find . -name "$@"; fi }
@@ -113,7 +110,7 @@ if exists percol; then
         zle -R -c               # refresh
     }
     zle -N percol_select_history
-    bindkey '^R' percol_select_history
+    bindkey '^[r' percol_select_history
 
     function percol_select_local_history() {
         local tac
@@ -123,7 +120,7 @@ if exists percol; then
         zle -R -c               # refresh
     }
     zle -N percol_select_local_history
-    bindkey '^S' percol_select_local_history
+    bindkey '^[s' percol_select_local_history
 fi
 if exists jump; then eval "$(jump shell zsh --bind=jj)"; fi
 if ! exists pixz; then builtin alias pixz='xz -T 0'; fi
@@ -223,6 +220,9 @@ setopt no_beep # turn off that incessant beeping
 #setopt complete_in_word # complete in the middle of a word
 #setopt extended_glob # for globs with exclusions
 #setopt always_to_end # move cursor to end of word on matches
+setopt prompt_subst # make sure prompt is able to be generated properly
+setopt inc_append_history # append every command to the history file
+setopt share_history # reload history when you start a shell
 
 # HISTORY
 # don't insert lines beginning with a space into history list
@@ -246,8 +246,11 @@ if [ -n "$SSH_TTY" ]; then export BULLETTRAIN_IS_SSH_CLIENT=1; fi
 if [ ${TERM_PROGRAM-x} = "iTerm.app" -o $gt -eq 0 -o $wslb -eq 0 -o $vsc -eq 0 -o $init -eq 0 -o $code -eq 0 -o $tmux -eq 0 ]; then
   bullettrain
 else
-  zgen oh-my-zsh themes/jreese
+  nobullettrain
 fi
 
-ZSHRC_HOSTNAME=~/.zshrc.`hostname -s`
-[[ -f $ZSHRC_HOSTNAME ]] && source $ZSHRC_HOSTNAME
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+autoload -Uz compinit && compinit
+
+ZSHRC_LOCAL=~/.zshrc.local
+[[ -f $ZSHRC_LOCAL ]] && source $ZSHRC_LOCAL

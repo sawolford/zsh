@@ -55,6 +55,7 @@ function prePYTHONPATH() { prepend PYTHONPATH $1 ':' }
 function postPYTHONPATH() { postpend PYTHONPATH $1 ':' }
 
 export EDITOR=vi
+export WORDCHARS=',*?_-.~=&;!#$%^(){}<>'
 
 if [[ ! -z $MICROSOFT ]]; then
   export PEOPLE_DIR=/mnt/c/people/feds
@@ -74,7 +75,7 @@ prePATH ~/bin
 prePATH /usr/local/bin
 
 # BULLETTRAIN_PROMPT_ORDER=( custom time status context dir git hg cmd_exec_time perl ruby virtualenv nvm aws go elixir )
-if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list cmd_exec_time status dir )
+if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list cmd_exec_time git status dir )
 else BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list dir ); fi
 BULLETTRAIN_PROMPT_CHAR=""
 BULLETTRAIN_DIR_EXTENDED=2
@@ -138,5 +139,7 @@ export PAGER=
 export GIT_PAGER=less
 export MANPAGER=less
 
-ZSHENV_HOSTNAME=~/.zshenv.`hostname -s`
-[[ -f $ZSHENV_HOSTNAME ]] && source $ZSHENV_HOSTNAME
+export HISTFILE=~/.zsh_history
+
+ZSHENV_LOCAL=~/.zshenv.local
+[[ -f $ZSHENV_LOCAL ]] && source $ZSHENV_LOCAL
