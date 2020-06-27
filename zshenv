@@ -76,7 +76,7 @@ prePATH /usr/local/bin
 
 # BULLETTRAIN_PROMPT_ORDER=( custom time status context dir git hg cmd_exec_time perl ruby virtualenv nvm aws go elixir )
 if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list cmd_exec_time git status dir )
-else BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list dir ); fi
+else BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list cmd_exec_time git status dir ); fi
 BULLETTRAIN_PROMPT_CHAR=""
 BULLETTRAIN_DIR_EXTENDED=2
 BULLETTRAIN_STATUS_EXIT_SHOW=true
@@ -139,6 +139,7 @@ export PAGER=
 export GIT_PAGER=less
 export MANPAGER=less
 
+export SAVEHIST=10000
 export HISTFILE=~/.zsh_history
 
 ZSHENV_LOCAL=~/.zshenv.local

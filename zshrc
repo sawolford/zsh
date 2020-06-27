@@ -1,22 +1,29 @@
-source ~/.zplug/init.zsh
+. ~/.zinit/zinit.zsh
 
-zplug "caiogondim/bullet-train.zsh", use:bullet-train.zsh-theme, defer:3
-zplug "zsh-users/zsh-history-substring-search", defer:3
-# zplug install
-zplug load
+zinit light "caiogondim/bullet-train.zsh"
+zinit light "zsh-users/zsh-history-substring-search"
+
+zinit snippet OMZL::git.zsh
+zinit snippet OMZP::git
+zinit for OMZL::prompt_info_functions.zsh
+
+autoload -Uz compinit
+compinit
 
 KEYTIMEOUT=1
 bindkey -e
-if zplug check zsh-users/zsh-history-substring-search; then
-  bindkey "$terminfo[kcuu1]" history-substring-search-up
-  bindkey "$key[Up]" history-substring-search-up
+if where history-substring-search-up &>/dev/null; then
+  [[ ! -z "$terminfo[kcuu1]" ]] && bindkey "$terminfo[kcuu1]" history-substring-search-up
+  [[ ! -z "$key[Up]" ]] && bindkey "$key[Up]" history-substring-search-up
   bindkey '^[[A' history-substring-search-up
-  bindkey "$terminfo[kcud1]" history-substring-search-down
-  bindkey "$key[Down]" history-substring-search-down
+  [[ ! -z "$terminfo[kcud1]" ]] && bindkey "$terminfo[kcud1]" history-substring-search-down
+  [[ ! -z "$key[Down]" ]] && bindkey "$key[Down]" history-substring-search-down
   bindkey '^[[B' history-substring-search-down
 fi
-bindkey "$terminfo[kLFT5]" backward-word
-bindkey "$terminfo[kRIT5]" forward-word
+[[ ! -z "$terminfo[kLFT5]" ]] && bindkey "$terminfo[kLFT5]" backward-word
+[[ ! -z "$terminfo[kRIT5]" ]] && bindkey "$terminfo[kRIT5]" forward-word
+bindkey "^[[D" backward-word
+bindkey "^[[C" forward-word 
 bindkey "^[\"" quote-region
 bindkey "^[W" copy-region-as-kill
 bindkey "^[w" kill-region
