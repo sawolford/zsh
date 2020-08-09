@@ -2,6 +2,7 @@
 
 zinit light "caiogondim/bullet-train.zsh"
 zinit light "zsh-users/zsh-history-substring-search"
+zinit light "Tarrasch/zsh-autoenv"
 
 zinit snippet OMZL::git.zsh
 zinit snippet OMZP::git
@@ -22,11 +23,15 @@ if where history-substring-search-up &>/dev/null; then
 fi
 [[ ! -z "$terminfo[kLFT5]" ]] && bindkey "$terminfo[kLFT5]" backward-word
 [[ ! -z "$terminfo[kRIT5]" ]] && bindkey "$terminfo[kRIT5]" forward-word
-bindkey "^[[D" backward-word
-bindkey "^[[C" forward-word 
+bindkey "^[[1;5D" backward-word
+bindkey "^[[1;5C" forward-word
 bindkey "^[\"" quote-region
 bindkey "^[W" copy-region-as-kill
 bindkey "^[w" kill-region
+
+export SAVEHIST=10000
+export HISTSIZE=1000
+export HISTFILE=~/.zsh_history
 
 function exists { which $1 &> /dev/null }
 builtin alias bullettrain='SEGMENT_SEPARATOR=""'
@@ -90,6 +95,9 @@ nn() {
                 command rm -f $NNN_TMPFILE
         fi
 }
+builtin alias genautoenv="printf 'if [[ \$autoenv_event == \"enter\" ]]; then\nelse\nfi\n' | tee -a $AUTOENV_FILE_LEAVE"
+builtin alias cmakedebug='cmake -DCMAKE_BUILD_TYPE=Debug'
+builtin alias cmakerelease='cmake -DCMAKE_BUILD_TYPE=Release'
 function makeall()
 {
   if (( ${+SYSTEMROOT} )); then

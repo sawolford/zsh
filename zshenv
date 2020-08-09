@@ -139,8 +139,9 @@ export PAGER=
 export GIT_PAGER=less
 export MANPAGER=less
 
-export SAVEHIST=10000
-export HISTFILE=~/.zsh_history
+export AUTOENV_FILE_ENTER=.autoenv.zsh
+export AUTOENV_FILE_LEAVE=.autoenv.zsh
+export AUTOENV_HANDLE_LEAVE=1
 
 ZSHENV_LOCAL=~/.zshenv.local
 [[ -f $ZSHENV_LOCAL ]] && source $ZSHENV_LOCAL
