@@ -68,7 +68,7 @@ elif [ $OS = "darwin" ]; then
   function preDYLD_LIBRARY_PATH { prepend DYLD_LIBRARY_PATH $1 ':' }
   function postDYLD_LIBRARY_PATH { postpend DYLD_LIBRARY_PATH $1 ':' }
   export PEOPLE_DIR=~/people/feds
-  prePATH ~/Library/Python/3.7/bin
+  prePATH ~/Library/Python/3.9/bin
   export EDITOR='/usr/bin/open -n -W -e'
 fi
 prePATH ~/bin
@@ -121,13 +121,19 @@ BULLETTRAIN_CONTEXT_BG=cyan
 BULLETTRAIN_CONTEXT_FG=black
 
 if [ $OS = "linux" ]; then
-  if [ $DISTRO = "CentOS Linux" -o $DISTRO = "Red Hat Enterprise Linux" ]; then
-    source /usr/share/Modules/init/zsh
-  elif [ $DISTRO = "Ubuntu" ]; then
-    source /usr/share/modules/init/zsh
-  else
-    echo "No environment modules!"
-  fi
+  case "$DISTRO" in
+    CentOS*)
+      ;&
+    Red*)
+      source /usr/share/Modules/init/zsh
+      ;;
+    Ubuntu*)
+      source /usr/share/modules/init/zsh
+      ;;
+    *)
+      echo No environment modules!
+      ;;
+  esac
 elif [ $OS = "darwin" ]; then
   source /usr/local/opt/modules/init/zsh
 fi

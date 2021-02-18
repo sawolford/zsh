@@ -29,8 +29,8 @@ bindkey "^[\"" quote-region
 bindkey "^[W" copy-region-as-kill
 bindkey "^[w" kill-region
 
-export SAVEHIST=10000
-export HISTSIZE=1000
+export SAVEHIST=100000
+export HISTSIZE=$SAVEHIST
 export HISTFILE=~/.zsh_history
 
 function exists { which $1 &> /dev/null }
@@ -40,15 +40,16 @@ function() grepr() { grep -nrHIE $@ . }
 function() agrepr() { grep -nrHIE $@ ${PWD} }
 function() wagrepr() { agrepr --color=always $@ | sed 's,/mnt/\(.\)/,\1:/,' }
 function() aack() { ack --nogroup $@ ${PWD} }
-function() aag() { ag --nogroup $@ ${PWD} }
+function() aag() { ag --pager less --nogroup $@ ${PWD} }
 builtin alias greprh='grepr --include="*.h"'
 builtin alias greprch='greprh --include="*.c*"'
 builtin alias ngrep='grep -n'
 builtin alias df='df -k'
 builtin alias du='du -k'
 builtin alias ls='ls -F'
-builtin alias ll='ls -lh'
-builtin alias lt='ls -ltr'
+builtin alias ll='ls -l'
+builtin alias lt='ls -lrt'
+builtin alias lh='ls -lrhtd'
 builtin alias rm='rm -i'
 builtin alias mv='mv -i'
 builtin alias cp='cp -i'
@@ -188,7 +189,8 @@ if [ $OS = "linux" ]; then
   builtin alias ls='ls -F --color=tty'
   if [[ -z $MICROSOFT ]]; then
     EECMD="code"
-    builtin alias ee=${EECMD}
+    builtin alias ee="${EECMD}"
+    builtin alias ex='xargs ${EECMD}'
   else
     EECMD="Code.exe"
     function ee() { if [ $# -lt 1 ]; then echo "Usage: $0 <filename> [<filename> ...]" ; else eval ${EECMD} $*; AutoIt3.exe /AutoIt3ExecuteLine "If AutoItSetOption('WinTitleMatchMode', 2) Then WinActivate('Visual Studio Code')"; fi }
@@ -197,14 +199,9 @@ elif [ $OS = "darwin" ]; then
   builtin alias ls='gls -F --color=tty'
   builtin alias md5sum=gmd5sum
   builtin alias nproc=gnproc
-  EECMD="open -a /Applications/Visual\ Studio\ Code.app"
-  function ee()
-  {
-    for i in "$@"; do
-      [ ! -e $i ] && touch "$i"
-      eval ${EECMD} \"$i\"
-    done
-  }
+  EECMD="code"
+  builtin alias ee="${EECMD}"
+  builtin alias ex='xargs ${EECMD}'
   function growl() { osascript -e "display notification \"$1\" with title \"Title\"" }
   function growlsound() { osascript -e "display notification \"$1\" sound name \"Glass\" with title \"Title\"" }
 fi
