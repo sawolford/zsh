@@ -40,7 +40,8 @@ function() grepr() { grep -nrHIE $@ . }
 function() agrepr() { grep -nrHIE $@ ${PWD} }
 function() wagrepr() { agrepr --color=always $@ | sed 's,/mnt/\(.\)/,\1:/,' }
 function() aack() { ack --nogroup $@ ${PWD} }
-function() aag() { ag --pager less --nogroup $@ ${PWD} }
+function() lag() { ag --pager less --nogroup $@ }
+function() pag() { lag $@ ${PWD} }
 builtin alias greprh='grepr --include="*.h"'
 builtin alias greprch='greprh --include="*.c*"'
 builtin alias ngrep='grep -n'
@@ -78,7 +79,7 @@ builtin alias hashd='hash -d'
 function makel() { make $* |& less }
 builtin alias makev='make VERBOSE=1'
 function makevl() { makev $* |& less }
-builtin alias makej='make depend; make -kj$(nproc) $*; make'
+builtin alias makej='make -kj$(nproc) $*; make -kj$(nproc); make'
 function killcode() { kill `ps -eo pid,command | grep code/code$ | awk '{print $1}'` }
 builtin alias gove='cd $VIRTUAL_ENV'
 function gousr() { cd $PEOPLE_DIR/.. }
@@ -150,24 +151,24 @@ tpxz() {
         echo "           Writes to stdout: tar cf - <file> [<file> ...] | pixz -9"
         return
     fi
-    if [ $# -eq 1 -a -f $1 ]; then
-        file=$1
-        if [ -e $file.xz ]; then echo $file.xz exists; return; fi
-        if pv $file | pixz -9 > $file.xz; then
-            rm -f $file
+    if [ $# -eq 1 -a -f "$1" ]; then
+        file="$1"
+        if [ -e "$file.xz" ]; then echo "$file.xz" exists; return; fi
+        if pv "$file" | pixz -9 > "$file.xz"; then
+            rm -f "$file"
         else
-            rm -f $file.xz
+            rm -f "$file.xz"
         fi
     else
-        size=`du -sbc $@ | tail -1 | cut -f1`
-        tar cf - $@ | pv -s $size | pixz -9
+        size=`du -sbc "$@" | tail -1 | cut -f1`
+        tar cf - "$@" | pv -s $size | pixz -9
     fi
 }
 function ctpxz() {
-    folder=$(basename $(pwd))
-    pushd .. >/dev/null
-    tpxz $folder > $folder.tlz
-    popd >/dev/null
+    (fpath="$(pwd)"
+    folder="$(basename $fpath)"
+    cd ..
+    tpxz "$folder" > "$folder.txz")
 }
 function myscp() {
     local args dest
@@ -202,8 +203,8 @@ elif [ $OS = "darwin" ]; then
   EECMD="code"
   builtin alias ee="${EECMD}"
   builtin alias ex='xargs ${EECMD}'
-  function growl() { osascript -e "display notification \"$1\" with title \"Title\"" }
-  function growlsound() { osascript -e "display notification \"$1\" sound name \"Glass\" with title \"Title\"" }
+  function growl() { osascript -e "display notification \"$1\" with title \"${2:-Title}\"" }
+  function growlsound() { osascript -e "display notification \"$1\" sound name \"Glass\" with title \"${2:-Title}\"" }
 fi
 function findee() { if [ $# -eq 0 ]; then echo "Usage: $0 <predicates>"; else find0 -name "$@" | eval xargs -0 ${EECMD}; fi }
 

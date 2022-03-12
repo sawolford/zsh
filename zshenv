@@ -140,9 +140,9 @@ fi
 postpend MODULEPATH $MODULESHOME/modulefiles ':'
 postpend MODULEPATH ~/zsh/modulefiles ':'
 
-export LESS=-RFX
+export LESS=-SRFXx4
 export PAGER=
-export GIT_PAGER=less
+# export GIT_PAGER=less
 export MANPAGER=less
 
 export AUTOENV_FILE_ENTER=.autoenv.zsh
