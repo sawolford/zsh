@@ -1,12 +1,29 @@
-. ~/.zinit/zinit.zsh
+ZSHDIR=${ZDOTDIR:-${HOME}}/zsh
+[[ -f $ZSHDIR/.zcomet/bin/zcomet.zsh ]] || git clone https://github.com/agkozak/zcomet.git $ZSHDIR/.zcomet/bin
+source $ZSHDIR/.zcomet/bin/zcomet.zsh
 
-zinit light "caiogondim/bullet-train.zsh"
-zinit light "zsh-users/zsh-history-substring-search"
-zinit light "Tarrasch/zsh-autoenv"
+function zcl() {
+  [[ $# -eq 2 ]] || { echo Usage: zcl path url; return 1 }
+  pname=$1
+  fname=$ZSHDIR/plugins/$pname
+  [[ -e $fname ]] || git clone $2/$pname $fname
+  zcomet load $fname
+}
 
-zinit snippet OMZL::git.zsh
-zinit snippet OMZP::git
-zinit for OMZL::prompt_info_functions.zsh
+function zcs() {
+  [[ $# -eq 2 ]] || { echo Usage: zcl path url; return 1 }
+  sname=$1
+  fname=$ZSHDIR/snippets/$sname
+  [[ -e $fname ]] || { mkdir -p $(dirname $fname); curl $2/$sname -o $fname }
+  zcomet snippet $fname
+}
+
+zcl caiogondim/bullet-train.zsh https://github.com
+zcl zsh-users/zsh-history-substring-search https://github.com
+zcl Tarrasch/zsh-autoenv https://github.com
+zcs ohmyzsh/ohmyzsh/master/lib/git.zsh https://raw.githubusercontent.com
+# zcs ohmyzsh/ohmyzsh/master/lib/prompt_info_functions.zsh https://raw.githubusercontent.com
+# zcs ohmyzsh/ohmyzsh/master/plugins/git https://raw.githubusercontent.com
 
 autoload -Uz compinit
 compinit
