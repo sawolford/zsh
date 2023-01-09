@@ -85,7 +85,7 @@ function prompt_module_list()
 }
 function prompt_mytime()
 {
-  prompt_segment $BULLETTRAIN_TIME_BG $BULLETTRAIN_TIME_FG "%D{%H:%M %m/%d}"
+  [ ! $BULLETTRAIN_TIME_SUPPRESS ] && prompt_segment $BULLETTRAIN_TIME_BG $BULLETTRAIN_TIME_FG "%D{%H:%M %m/%d}"
 }
 mycontext()
 {
