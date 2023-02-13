@@ -68,11 +68,8 @@ elif [ $OS = "darwin" ]; then
   function preDYLD_LIBRARY_PATH { prepend DYLD_LIBRARY_PATH $1 ':' }
   function postDYLD_LIBRARY_PATH { postpend DYLD_LIBRARY_PATH $1 ':' }
   export PEOPLE_DIR=~/people/feds
-  prePATH ~/Library/Python/3.9/bin
   export EDITOR='/usr/bin/open -n -W -e'
 fi
-prePATH ~/bin
-prePATH /usr/local/bin
 
 # BULLETTRAIN_PROMPT_ORDER=( custom time status context dir git hg cmd_exec_time perl ruby virtualenv nvm aws go elixir )
 if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list cmd_exec_time git status dir )
@@ -122,6 +119,8 @@ BULLETTRAIN_CONTEXT_FG=black
 
 if [ $OS = "linux" ]; then
   case "$DISTRO" in
+    Alma*)
+      ;&
     CentOS*)
       ;&
     Red*)
@@ -135,7 +134,8 @@ if [ $OS = "linux" ]; then
       ;;
   esac
 elif [ $OS = "darwin" ]; then
-  source /usr/local/opt/modules/init/zsh
+  if [ -e /opt/homebrew/opt/modules/init/zsh ]; then source /opt/homebrew/opt/modules/init/zsh;
+  else source /usr/local/opt/modules/init/zsh; fi
 fi
 postpend MODULEPATH $MODULESHOME/modulefiles ':'
 postpend MODULEPATH ~/zsh/modulefiles ':'
