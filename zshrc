@@ -50,6 +50,28 @@ export SAVEHIST=100000
 export HISTSIZE=$SAVEHIST
 export HISTFILE=~/.zsh_history
 
+if [ $OS = "linux" ]; then
+  builtin alias ls='ls -F --color=tty'
+  if [[ -z $MICROSOFT ]]; then
+    EECMD="code"
+    builtin alias ee="${EECMD}"
+    builtin alias ex='xargs ${EECMD}'
+  else
+    EECMD="Code.exe"
+    function ee() { if [ $# -lt 1 ]; then echo "Usage: $0 <filename> [<filename> ...]" ; else eval ${EECMD} $*; AutoIt3.exe /AutoIt3ExecuteLine "If AutoItSetOption('WinTitleMatchMode', 2) Then WinActivate('Visual Studio Code')"; fi }
+  fi
+elif [ $OS = "darwin" ]; then
+  builtin alias ls='gls -F --color=tty'
+  builtin alias tar=gtar
+  builtin alias md5sum=gmd5sum
+  builtin alias nproc=gnproc
+  EECMD="code"
+  builtin alias ee="${EECMD}"
+  builtin alias ex='xargs ${EECMD}'
+  function growl() { osascript -e "display notification \"$1\" with title \"${2:-Title}\"" }
+  function growlsound() { osascript -e "display notification \"$1\" sound name \"Glass\" with title \"${2:-Title}\"" }
+fi
+
 function exists { which $1 &> /dev/null }
 builtin alias bullettrain='SEGMENT_SEPARATOR=""'
 builtin alias nobullettrain='SEGMENT_SEPARATOR=" "'
@@ -202,27 +224,6 @@ function myscp() {
     echo scp $args $dest
     scp $args $dest
 }
-
-if [ $OS = "linux" ]; then
-  builtin alias ls='ls -F --color=tty'
-  if [[ -z $MICROSOFT ]]; then
-    EECMD="code"
-    builtin alias ee="${EECMD}"
-    builtin alias ex='xargs ${EECMD}'
-  else
-    EECMD="Code.exe"
-    function ee() { if [ $# -lt 1 ]; then echo "Usage: $0 <filename> [<filename> ...]" ; else eval ${EECMD} $*; AutoIt3.exe /AutoIt3ExecuteLine "If AutoItSetOption('WinTitleMatchMode', 2) Then WinActivate('Visual Studio Code')"; fi }
-  fi
-elif [ $OS = "darwin" ]; then
-  builtin alias ls='gls -F --color=tty'
-  builtin alias md5sum=gmd5sum
-  builtin alias nproc=gnproc
-  EECMD="code"
-  builtin alias ee="${EECMD}"
-  builtin alias ex='xargs ${EECMD}'
-  function growl() { osascript -e "display notification \"$1\" with title \"${2:-Title}\"" }
-  function growlsound() { osascript -e "display notification \"$1\" sound name \"Glass\" with title \"${2:-Title}\"" }
-fi
 function findee() { if [ $# -eq 0 ]; then echo "Usage: $0 <predicates>"; else find0 -name "$@" | eval xargs -0 ${EECMD}; fi }
 
 # setopt
