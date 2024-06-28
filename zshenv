@@ -72,20 +72,26 @@ elif [ $OS = "darwin" ]; then
 fi
 
 # BULLETTRAIN_PROMPT_ORDER=( custom time status context dir git hg cmd_exec_time perl ruby virtualenv nvm aws go elixir )
-if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list cmd_exec_time git status dir )
-else BULLETTRAIN_PROMPT_ORDER=( mytime mycontext module_list cmd_exec_time git status dir ); fi
+if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime mycontext myenv cmd_exec_time mygit status dir )
+else BULLETTRAIN_PROMPT_ORDER=( mytime mycontext myenv cmd_exec_time mygit status dir ); fi
 BULLETTRAIN_PROMPT_CHAR=""
-BULLETTRAIN_DIR_EXTENDED=2
+BULLETTRAIN_DIR_EXTENDED=1
 BULLETTRAIN_STATUS_EXIT_SHOW=true
 BULLETTRAIN_PROMPT_SEPARATE_LINE=false
-function prompt_module_list()
+function prompt_myenv()
 {
-  local prompt="$(module list |& tail -n +2 | sed 's, .),,g' | tr -s " " | paste -sd ' ' -)"
-  [[ ! -z $prompt ]] && prompt_segment $BULLETTRAIN_MODULE_LIST_BG $BULLETTRAIN_MODULE_LIST_FG "$prompt"
+  local venv=
+  [[ ! -z $VIRTUAL_ENV ]] && venv=$(basename $VIRTUAL_ENV)
+  local modules="$(module list |& tail -n +2 | sed 's, .),,g' | tr -s " " | paste -sd ' ' -)"
+  local prompt=
+  [[ ! -z $venv ]] && prompt="$venv "
+  prompt+="|"
+  [[ ! -z $modules ]] && prompt+=" $modules"
+  [[ $prompt != "|" ]] && prompt_segment $BULLETTRAIN_myenv_BG $BULLETTRAIN_myenv_FG "$prompt"
 }
 function prompt_mytime()
 {
-  [ ! $BULLETTRAIN_TIME_SUPPRESS ] && prompt_segment $BULLETTRAIN_TIME_BG $BULLETTRAIN_TIME_FG "%D{%H:%M %m/%d}"
+  [ ! $BULLETTRAIN_TIME_SUPPRESS ] && prompt_segment $BULLETTRAIN_TIME_BG $BULLETTRAIN_TIME_FG "%D{%H:%M}"
 }
 mycontext()
 {
@@ -110,8 +116,24 @@ function prompt_mycontext()
   local _context="$(mycontext)"
   [[ -n "$_context" ]] && prompt_segment $BULLETTRAIN_CONTEXT_BG $BULLETTRAIN_CONTEXT_FG "$_context"
 }
-BULLETTRAIN_MODULE_LIST_BG=magenta
-BULLETTRAIN_MODULE_LIST_FG=white
+mygit()
+{
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    url=.
+    git remote get-url origin >/dev/null 2>&1 && url=$(basename $(git remote get-url origin))
+    branch=.
+    git rev-parse --abbrev-ref HEAD >/dev/null 2>&1 && branch="$(git rev-parse --abbrev-ref HEAD)"
+    [ "$branch" = "master" -o "$branch" = "main" ] && branch=""
+    echo ${url/.git/}@$branch
+  fi
+}
+function prompt_mygit()
+{
+  local _context="$(mygit)"
+  [[ -n "${_context}" ]] && prompt_segment $BULLETTRAIN_GIT_BG $BULLETTRAIN_GIT_FG "$_context"
+}
+BULLETTRAIN_myenv_BG=magenta
+BULLETTRAIN_myenv_FG=white
 BULLETTRAIN_TIME_BG=green
 BULLETTRAIN_TIME_FG=black
 BULLETTRAIN_CONTEXT_BG=cyan
@@ -148,6 +170,18 @@ export MANPAGER=less
 export AUTOENV_FILE_ENTER=.autoenv.zsh
 export AUTOENV_FILE_LEAVE=.autoenv.zsh
 export AUTOENV_HANDLE_LEAVE=1
+
+# Also in zprofile
+prePATH /usr/local/bin
+if [[ ! -z $MICROSOFT ]]; then
+  true
+elif [ $OS = "linux" ]; then
+  true
+elif [ $OS = "darwin" ]; then
+  prePATH ~/Library/Python/3.9/bin
+  prePATH /opt/homebrew/bin
+fi
+prePATH ~/bin
 
 ZSHENV_LOCAL=~/.zshenv.local
 [[ -f $ZSHENV_LOCAL ]] && source $ZSHENV_LOCAL
