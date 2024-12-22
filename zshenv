@@ -72,17 +72,21 @@ elif [ $OS = "darwin" ]; then
 fi
 
 # BULLETTRAIN_PROMPT_ORDER=( custom time status context dir git hg cmd_exec_time perl ruby virtualenv nvm aws go elixir )
-if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime mycontext myenv cmd_exec_time mygit status dir )
-else BULLETTRAIN_PROMPT_ORDER=( mytime mycontext myenv cmd_exec_time mygit status dir ); fi
+if [[ -z $MICROSOFT ]]; then BULLETTRAIN_PROMPT_ORDER=( mytime mycontext myenv cmd_exec_time mygit status myextra dir )
+else BULLETTRAIN_PROMPT_ORDER=( mytime mycontext myenv cmd_exec_time mygit status myextra dir ); fi
 BULLETTRAIN_PROMPT_CHAR=""
 BULLETTRAIN_DIR_EXTENDED=1
 BULLETTRAIN_STATUS_EXIT_SHOW=true
 BULLETTRAIN_PROMPT_SEPARATE_LINE=false
+function prompt_myextra()
+{
+  [[ -n $MYEXTRA ]] && prompt_segment $BULLETTRAIN_CONTEXT_BG $BULLETTRAIN_CONTEXT_FG $(eval "$MYEXTRA")
+}
 function prompt_myenv()
 {
   local venv=
   [[ ! -z $VIRTUAL_ENV ]] && venv=$(basename $VIRTUAL_ENV)
-  local modules="$(module list |& tail -n +2 | sed 's, .),,g' | tr -s " " | paste -sd ' ' -)"
+  local modules="$(module list |& tail -n +2 | sed -E 's, +.\),,g' | sed -E 's,^ +,,' | sed -E 's, +$,,g' | tr -s " " | paste -sd ' ' -)"
   local prompt=
   [[ ! -z $venv ]] && prompt="$venv "
   prompt+="|"

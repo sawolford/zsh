@@ -52,8 +52,9 @@ export HISTFILE=~/.zsh_history
 
 if [ $OS = "linux" ]; then
   builtin alias ls='ls -F --color=tty'
+  builtin alias du='du -k'
   if [[ -z $MICROSOFT ]]; then
-    EECMD="code"
+    [[ -z $EECMD ]] && EECMD="code"
     builtin alias ee="${EECMD}"
     builtin alias ex='xargs ${EECMD}'
   else
@@ -62,6 +63,7 @@ if [ $OS = "linux" ]; then
   fi
 elif [ $OS = "darwin" ]; then
   builtin alias ls='gls -F --color=tty'
+  builtin alias du='gdu -k'
   builtin alias tar=gtar
   builtin alias md5sum=gmd5sum
   builtin alias nproc=gnproc
@@ -85,7 +87,6 @@ builtin alias greprh='grepr --include="*.h"'
 builtin alias greprch='greprh --include="*.c*"'
 builtin alias ngrep='grep -n'
 builtin alias df='df -k'
-builtin alias du='du -k'
 builtin alias ls='ls -F'
 builtin alias ll='ls -l'
 builtin alias lt='ls -lrt'
@@ -126,6 +127,9 @@ function stmux() { ssh -t $@ "tmux new -A -s tmux" }
 builtin alias ltmux='tmux new -A -s tmux'
 function fixssh() { eval $(tmux show-env | sed -n 's/^\(SSH_[^=]*\)=\(.*\)/export \1="\2"/p') }
 function calc() { bc -l <<< "$@" }
+builtin alias rp='realpath'
+function cdrp() { cd $(realpath ${1:-.}); }
+function rmrp() { echo unimplemented; }
 export NNN_TMPFILE="/tmp/nnn"
 nn() {
 	export NNN_CONTEXT_COLORS='4321'
@@ -157,6 +161,7 @@ function makeall()
     done
   fi
 }
+
 if exists percol; then
     function percol_select_history() {
         local tac
